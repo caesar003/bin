@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Check if an argument is provided, otherwise, use the current directory
+if [ -z "$1" ]; then
+    project_directory="."
+else
+    project_directory="$1"
+fi
+
+# Change to the specified project directory
+cd "$project_directory"
+
+# Start tmux
+tmux new-session -d -s dev
+
+# Rename current window to editor
+tmux rename-window "editor"
+
+# Send keys to the default window (window "0") for NeoVim
+tmux send-keys "nvim ." C-m
+
+# Create a new window in tmux for npm server
+tmux new-window -n "npm + git"
+
+# Run npm start in the top pane
+tmux send-keys -t "npm + git" "npm run start" C-m
+
+# Split the second window vertically
+tmux split-window -v
+
+# Attach to the tmux session
+tmux attach-session -t dev

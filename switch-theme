@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Toggle between dark and light themes for Kitty, Neovim, and colorscheme
+
+kitty_config=~/.config/kitty/kitty.conf
+nvim_init=~/.config/nvim/lua/user/init.lua
+nvim_options=~/.config/nvim/lua/user/options.lua
+
+# Function to check if a line exists in a file
+line_exists() {
+    grep -qF "$1" "$2"
+}
+
+# Function to toggle Kitty Theme
+toggle_kitty_theme() {
+    LIGHT_THEME="include Rosé-pine-kitty-dawn.conf"
+    DARK_THEME="include Rosé-pine-kitty.conf"
+
+    if line_exists "$LIGHT_THEME" "$kitty_config"; then
+        sed -i "s/$LIGHT_THEME/$DARK_THEME/" "$kitty_config"
+        echo "Kitty: Switched to dark theme"
+    elif line_exists "$DARK_THEME" "$kitty_config"; then
+        sed -i "s/$DARK_THEME/$LIGHT_THEME/" "$kitty_config"
+        echo "Kitty: Switched to light theme"
+    else
+        echo "Kitty: Unknown theme, skipping"
+    fi
+}
+
+# Function to toggle Neovim Theme
+toggle_nvim_theme() {
+    LIGHT_THEME="colorscheme = \"astrolight\","
+    DARK_THEME="colorscheme = \"rose-pine\","
+    # DARK_THEME="colorscheme = \"catppuccin\","
+
+    if line_exists "$LIGHT_THEME" "$nvim_init"; then
+        sed -i "s/$LIGHT_THEME/$DARK_THEME/" "$nvim_init"
+        echo "Neovim: Switched to dark theme"
+    elif line_exists "$DARK_THEME" "$nvim_init"; then
+        sed -i "s/$DARK_THEME/$LIGHT_THEME/" "$nvim_init"
+        echo "Neovim: Switched to light theme"
+    else
+        echo "Neovim: Unknown theme, skipping"
+    fi
+}
+
+# Function to toggle Neovim Background
+toggle_nvim_background() {
+    LIGHT_BACKGROUND='background = "light",'
+    DARK_BACKGROUND='background = "dark",'
+
+    if line_exists "$LIGHT_BACKGROUND" "$nvim_options"; then
+        sed -i "s/$LIGHT_BACKGROUND/$DARK_BACKGROUND/" "$nvim_options"
+        echo "Neovim: Switched to dark background"
+    elif line_exists "$DARK_BACKGROUND" "$nvim_options"; then
+        sed -i "s/$DARK_BACKGROUND/$LIGHT_BACKGROUND/" "$nvim_options"
+        echo "Neovim: Switched to light background"
+    else
+        echo "Neovim: Unknown background, skipping"
+    fi
+}
+
+# Main function
+main() {
+    if [ "$1" == "dark" ]; then
+        echo "Switching to dark theme"
+        toggle_kitty_theme
+        toggle_nvim_theme
+        toggle_nvim_background
+    elif [ "$1" == "light" ]; then
+        echo "Switching to light theme"
+        toggle_kitty_theme
+        toggle_nvim_theme
+        toggle_nvim_background
+    else
+        echo "Usage: $0 [dark|light]"
+        exit 1
+    fi
+}
+
+# Call the main function
+main "$@"

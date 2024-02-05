@@ -1,0 +1,4 @@
+#!/bin/bash
+
+git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
+git clone https://github.com/caesar003/astro-nvim-config ~/.config/nvim/lua/user
